@@ -2,17 +2,33 @@
 
 Personalizzazione di XMage per il gioco e l'analisi delle partite.
 
-## Stato della distribuzione
+## Aggiornamento dal Laboratorio
 
-Repository di distribuzione in preparazione. Il canale di aggiornamento non è ancora attivo: i pacchetti non sono stati pubblicati nelle Releases.
+Disponibile **Laboratorio 10.0 / IA6**, basato su **XMage 1.4.62-V1**.
 
-Versioni preparate: Laboratorio 9.2 (IA6), launcher 0.3, base XMage 1.4.61-V1.
+Con il launcher 0.3.1 già installato:
 
-Il launcher controlla separatamente gli aggiornamenti ufficiali XMage e i pacchetti Laboratorio. Le nuove versioni ufficiali richiedono integrazione e verifica delle personalizzazioni prima di diventare un aggiornamento Laboratorio.
+1. Termina la partita e chiudi client e server XMage; lascia aperto il launcher.
+2. Apri **Aggiornamenti → Imposta canale…**.
+3. Incolla questo indirizzo e conferma:
 
-I pacchetti Laboratorio sono verificati mediante catalogo firmato e hash SHA-256. La chiave privata di firma resta esterna a questo repository.
+   `https://raw.githubusercontent.com/Issho1991/Xmagevolution/main/updates/catalog.properties`
 
-Mazzi personali, report delle partite e registri privati non fanno parte della distribuzione pubblica.
+4. Premi **Controlla aggiornamenti**.
+5. Quando compare **Lab 10.0 · IA 6 · base XMage 1.4.62-V1**, premi **Scarica e aggiorna Laboratorio** e conferma.
+6. Attendi il messaggio **Aggiornamento attivato**, poi avvia il Laboratorio.
+
+Il canale va impostato una sola volta. Il launcher verifica firma e integrità del download, crea un backup e conserva mazzi e report. Le versioni precedenti restano selezionabili in **Versioni e backup**.
+
+[Release e note](https://github.com/Issho1991/Xmagevolution/releases/tag/lab-10.0-ai6) · [Verifica automatica](https://github.com/Issho1991/Xmagevolution/actions/runs/38600772837) · [Resoconto di verifica](updates/lab-10.0-verification.json)
+
+## Integrazione degli aggiornamenti ufficiali
+
+Il launcher controlla separatamente gli aggiornamenti ufficiali XMage e i pacchetti Laboratorio. Una nuova versione ufficiale diventa disponibile nel canale Laboratorio dopo l'integrazione e la verifica delle personalizzazioni.
+
+Per Lab 10.0 sono passati 450 test locali; la build pubblica ha ripetuto 147 test attivi e confrontato tutte le classi di produzione. Il pacchetto scaricato dalla release coincide con quello verificato localmente. Una partita grafica completa su Windows non fa parte di queste verifiche.
+
+Il catalogo è firmato e identifica il pacchetto tramite SHA-256. La chiave privata di firma resta esterna al repository. Mazzi personali, report delle partite e registri privati non fanno parte della distribuzione pubblica.
 
 ## Progetto originale
 

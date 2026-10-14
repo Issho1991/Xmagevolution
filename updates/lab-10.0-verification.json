@@ -1,0 +1,42 @@
+{
+  "release": "lab-10.0-ai6",
+  "base": "1.4.62-V1",
+  "productionFiles": 57,
+  "tests": {
+    "found": 467,
+    "passed": 450,
+    "disabled": 14,
+    "abortedExternalArchives": 3,
+    "failed": 0
+  },
+  "windowsUiTested": false,
+  "serverSmoke": "passed: server ready in 25046 ms, backup, activation, return preserving newer data",
+  "onlineChannel": "package published and downloaded; signed catalog activation is next",
+  "releaseCommit": "387c9098b6fbe1cc9e6765998947fb748b2b2fe4",
+  "githubWorkflow": "https://github.com/Issho1991/Xmagevolution/actions/runs/38600772837",
+  "githubWorkflowConclusion": "success",
+  "githubTests": {
+    "tests": 148,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "productionClassesMatchLocalVerification": true
+  },
+  "publicDownload": [
+    {
+      "name": "build-summary.json",
+      "bytes": 10647,
+      "sha256": "a39339226b82a311511e746647e548ef80a2ced292c71d8a054e901b312b7734"
+    },
+    {
+      "name": "Pacchetto_Lab_10_0_per_Launcher.zip",
+      "bytes": 244794634,
+      "sha256": "4c380e8ac2819c0a3bc38cf034c214afc94ea4e11acb3e6490617f034007c8f9"
+    },
+    {
+      "name": "verification-public.json",
+      "bytes": 118,
+      "sha256": "e202ea767b1e5c7ff5f8eb806c87337f430bf0fcbfacb591224ba88fa98802b5"
+    }
+  ]
+}
