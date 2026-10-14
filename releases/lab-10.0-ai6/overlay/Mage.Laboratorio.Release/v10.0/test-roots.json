@@ -1,0 +1,9 @@
+[
+  "Mage.Common/src/test/java",
+  "Mage.Tests/src/test/java",
+  "Mage/src/test/java",
+  "Mage.Server/src/test/java",
+  "Mage.Client/src/test/java",
+  "Mage.Server.Console/src/test/java",
+  "Mage.Verify/src/test/java"
+]

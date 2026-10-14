@@ -1,0 +1,15 @@
+{
+  "release": "lab-10.0-ai6",
+  "base": "1.4.62-V1",
+  "productionFiles": 57,
+  "tests": {
+    "found": 467,
+    "passed": 450,
+    "disabled": 14,
+    "abortedExternalArchives": 3,
+    "failed": 0
+  },
+  "windowsUiTested": false,
+  "serverSmoke": "passed: server ready in 25046 ms, backup, activation, return preserving newer data",
+  "onlineChannel": "not yet published"
+}
