@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "status": "active",
+  "activatedAt": "2026-10-14T17:51:20Z",
+  "checkIntervalHours": 6,
+  "upstreamReleaseId": 402688370,
+  "upstreamTag": "xmage_1.4.62V1",
+  "catalogSerial": 3,
+  "labId": "lab-10.0-ai6",
+  "bootstrap": {
+    "commit": "db550748e7c183e1af8b9fc9204cbfa9cf794366",
+    "workflowRunId": 38609745948,
+    "conclusion": "success",
+    "replay": true,
+    "activeTestsPassed": 147,
+    "testsSkipped": 1,
+    "automationTestsPassed": 15,
+    "backupActivationServerRollback": true
+  },
+  "lastNotificationKey": "automation-active:2026-10-14",
+  "pendingCandidate": null
+}
