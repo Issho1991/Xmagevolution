@@ -1,0 +1,84 @@
+name: Automatic official XMage integration
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'automation/**'
+      - '.github/workflows/automatic-upstream.yml'
+permissions:
+  contents: read
+concurrency:
+  group: official-xmage-integration
+  cancel-in-progress: false
+jobs:
+  integrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      publish: ${{ steps.build.outputs.publish }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Test automation failure gates
+        run: python3 -m unittest discover -s automation/tests -v
+      - name: Detect, integrate, build and verify
+        id: build
+        env:
+          REPLAY: ${{ github.event_name == 'push' }}
+        run: |
+          if [ "$REPLAY" = true ]; then
+            python3 automation/pipeline.py --replay
+          else
+            python3 automation/pipeline.py
+          fi
+      - name: Keep verified candidate
+        if: steps.build.outputs.publish == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: verified-candidate
+          path: auto-work/candidate/
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+      - name: Keep diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: integration-diagnostics
+          path: |
+            auto-work/spec.json
+            auto-work/build/compile.log
+            auto-work/tests/compile.log
+            auto-work/tests/run.log
+            auto-work/tests/junit/*.xml
+            auto-work/smoke.log
+            auto-work/server.log
+            auto-work/candidate/candidate.json
+          if-no-files-found: ignore
+          retention-days: 14
+  publish:
+    needs: integrate
+    if: needs.integrate.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: verified-candidate
+          path: candidate
+      - name: Publish candidate after successful gates
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 automation/publish_candidate.py

@@ -1,0 +1,6 @@
+{
+  "upstreamReleaseId": 402688370,
+  "upstreamTag": "xmage_1.4.62V1",
+  "upstreamCommit": "eb69d05b88142b5c4eec4869bcb23a0fec13c091",
+  "purpose": "Initial replay of the automatic integration pipeline; keep current Lab 10.0 channel"
+}

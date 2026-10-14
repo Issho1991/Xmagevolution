@@ -1,0 +1,21 @@
+[
+  "org.mage.test.game.ends.LabFiniteTriggerDrawTest",
+  "org.mage.test.game.ends.GameIsADrawTest",
+  "mage.player.human.LabDrawConfirmationTest",
+  "mage.player.ai.LabDrawDiagnosticsTest",
+  "mage.player.ai.LabRollbackBoundaryTest",
+  "mage.player.ai.LabExitDiagnosticsTest",
+  "mage.player.ai.LabUndoIntegrationTest",
+  "mage.player.ai.CombatDecisionAITest",
+  "mage.player.ai.MultiplayerCombatAITest",
+  "mage.player.ai.DecisionRecoveryAITest",
+  "mage.player.ai.SearchRecoveryPublicationTest",
+  "mage.player.ai.ForcedPassPriorityTest",
+  "mage.player.ai.LabTelemetryIntegrationTest",
+  "org.mage.test.AI.basic.BlockSimulationAITest",
+  "org.mage.test.AI.basic.ChooseModalAbilityAITest",
+  "org.mage.test.AI.basic.SimulationTriggersAITest",
+  "mage.lab.LabCoreTest",
+  "mage.lab.LabTimingTest",
+  "mage.abilities.mana.ManaOptionsOptimizationTest"
+]

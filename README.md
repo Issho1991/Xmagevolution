@@ -24,7 +24,7 @@ Il canale va impostato una sola volta. Il launcher verifica firma e integrità d
 
 ## Integrazione degli aggiornamenti ufficiali
 
-Il launcher controlla separatamente gli aggiornamenti ufficiali XMage e i pacchetti Laboratorio. Una nuova versione ufficiale diventa disponibile nel canale Laboratorio dopo l'integrazione e la verifica delle personalizzazioni.
+Il launcher controlla separatamente gli aggiornamenti ufficiali XMage e i pacchetti Laboratorio. È predisposto il [flusso automatico di integrazione](automation/README.md): un controllo programmato rileva le nuove release, GitHub integra e verifica il pacchetto e una verifica separata aggiorna il catalogo firmato. Conflitti o verifiche fallite mantengono disponibile la versione precedente. Sul PC l'installazione si avvia dallo stesso pulsante **Scarica e aggiorna Laboratorio**.
 
 Per Lab 10.0 sono passati 450 test locali; la build pubblica ha ripetuto 147 test attivi e confrontato tutte le classi di produzione. Il pacchetto scaricato dalla release coincide con quello verificato localmente. Una partita grafica completa su Windows non fa parte di queste verifiche.
 
