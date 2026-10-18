@@ -1,0 +1,45 @@
+name: Publish verified Laboratorio channel
+on:
+  workflow_run:
+    workflows: ['Automatic official XMage integration']
+    types: [completed]
+permissions:
+  contents: read
+concurrency:
+  group: laboratorio-channel-publication
+  cancel-in-progress: false
+jobs:
+  channel:
+    if: >-
+      github.repository == 'Issho1991/Xmagevolution' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: lab-release
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Verify publication guards without credentials
+        run: python3 -m unittest discover -s automation/tests -v
+      - name: Inspect completed run and candidate without the signing key
+        env:
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+        run: python3 automation/channel.py --run-id "$SOURCE_RUN" --work promotion-work
+      - name: Sign and publish only a verified candidate; record service status
+        env:
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LAB_CATALOG_PRIVATE_KEY: ${{ secrets.LAB_CATALOG_PRIVATE_KEY }}
+        run: python3 automation/channel.py --run-id "$SOURCE_RUN" --work promotion-work --apply
+      - name: Record a failed publication without changing the signed catalog
+        if: failure()
+        env:
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 automation/channel.py --run-id "$SOURCE_RUN" --work failure-work --record-error

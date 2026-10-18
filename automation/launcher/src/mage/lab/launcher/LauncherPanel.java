@@ -19,6 +19,8 @@ public final class LauncherPanel extends JPanel {
     private final VersionManager versions;
     private final OfficialUpdates officialUpdates;
     private final LabUpdates labUpdates;
+    private final AutomationStatus automationStatus;
+    private final JTextArea serviceStatus=text("Stato del servizio non ancora verificato.",4);
     private final JTextArea officialStatus=text("Controllo ufficiale non ancora eseguito.",4);
     private final JTextArea labStatus=text("",4), releaseNotes=text("",3);
     private final JLabel updateBase=label("",14);
@@ -51,7 +53,7 @@ public final class LauncherPanel extends JPanel {
 
     public LauncherPanel(Installation i, ProcessSupervisor p) throws IOException {
         installation = i; processes = p; versions = new VersionManager(i.home);
-        officialUpdates=new OfficialUpdates(i.home);labUpdates=new LabUpdates(i.home);
+        officialUpdates=new OfficialUpdates(i.home);labUpdates=new LabUpdates(i.home);automationStatus=new AutomationStatus(i.home);
         javaExecutable = readJava();
         setLayout(new BorderLayout(0, 20)); setBorder(new EmptyBorder(25, 28, 22, 28)); setBackground(PAPER);
         JPanel heading = new JPanel(new BorderLayout()); heading.setOpaque(false);
@@ -60,10 +62,10 @@ public final class LauncherPanel extends JPanel {
         titles.add(title); titles.add(Box.createVerticalStrut(7));
         titles.add(label("Il tuo spazio per giocare, osservare e migliorare i mazzi.", 14));
         heading.add(titles, BorderLayout.CENTER);
-        JLabel badge = label("LAUNCHER 0.3", 12); badge.setBorder(new EmptyBorder(5, 12, 5, 0)); heading.add(badge, BorderLayout.EAST);
+        JLabel badge = label("LAUNCHER 0.3.2", 12); badge.setBorder(new EmptyBorder(5, 12, 5, 0)); heading.add(badge, BorderLayout.EAST);
         add(heading, BorderLayout.NORTH);
         JTabbedPane tabs = new JTabbedPane(); tabs.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        tabs.addTab("Avvio", home()); tabs.addTab("Aggiornamenti", updates()); tabs.addTab("Versioni e backup", versions()); tabs.addTab("Registri e diagnosi", logs());
+        tabs.addTab("Avvio", home()); tabs.addTab("Aggiornamenti", new JScrollPane(updates())); tabs.addTab("Versioni e backup", versions()); tabs.addTab("Registri e diagnosi", logs());
         add(tabs, BorderLayout.CENTER);
         JPanel footer = new JPanel(new BorderLayout(12, 0)); footer.setOpaque(false);
         status.setForeground(INK); status.setFont(new Font("SansSerif", Font.PLAIN, 13)); footer.add(status);
@@ -89,6 +91,7 @@ public final class LauncherPanel extends JPanel {
         choices.addActionListener(e -> refresh());
         try{OfficialUpdates.Release saved=officialUpdates.cached();if(saved!=null)officialStatus.setText(saved.describe()+"\nPremi Controlla aggiornamenti per verificare le novità.");}catch(IOException e){officialStatus.setText(e.getMessage());}
         refreshVersions();refreshUpdates(); refresh();
+        try{serviceStatus.setText(automationStatus.cached(labUpdates.channel()));}catch(IOException e){serviceStatus.setText("Stato del servizio da verificare.");}
     }
     private JPanel home() throws IOException {
         JPanel page = page();
@@ -135,6 +138,7 @@ public final class LauncherPanel extends JPanel {
         JPanel installRow=flow();installRow.add(installUpdate);page.add(installRow);
         page.add(text("Una nuova release ufficiale viene installata nel Laboratorio dopo l’integrazione e le verifiche. L’aggiornamento crea un backup e conserva mazzi e report; puoi tornare alla versione precedente.",3));
         JPanel channelRow=flow();channelRow.add(configureChannel);channelRow.add(catalogImport);page.add(channelRow);
+        page.add(Box.createVerticalStrut(10));page.add(label("Preparazione automatica degli aggiornamenti",16));page.add(serviceStatus);
         page.add(Box.createVerticalGlue());return page;
     }
     private void refreshUpdates() {
@@ -159,13 +163,21 @@ public final class LauncherPanel extends JPanel {
             if(labUpdates.channel().isEmpty())result="Controllo concluso. Il canale di distribuzione Laboratorio deve ancora essere pubblicato/configurato.";
             else try{LabCatalog c=labUpdates.check();versions.refreshCatalog();result="Catalogo Laboratorio verificato: pubblicazione "+c.serial+".";}
             catch(IOException e){result="Controllo Laboratorio non riuscito: "+e.getMessage()+" La versione installata resta disponibile.";}
+            String service;
+            try{service=automationStatus.check(labUpdates.channel());}
+            catch(IOException e){
+                service="Stato online non raggiungibile. ";
+                try{service+=automationStatus.cached(labUpdates.channel());}catch(IOException ignored){service+="Riprova il controllo più tardi.";}
+            }
+            final String checkedService=service;
+            SwingUtilities.invokeLater(()->serviceStatus.setText(checkedService));
             SwingUtilities.invokeLater(()->{refreshUpdates();refresh();});return result;
         });
     }
     private void configureChannel() {
         try {
             String value=JOptionPane.showInputDialog(this,"Indirizzo HTTPS del catalogo Laboratorio pubblicato.\nQuesto canale è distinto dal sito ufficiale XMage.\nLascia vuoto per disattivare il controllo Laboratorio online.",labUpdates.channel());
-            if(value==null)return;labUpdates.channel(value);refreshUpdates();refresh();
+            if(value==null)return;labUpdates.channel(value);serviceStatus.setText(automationStatus.cached(value.trim()));refreshUpdates();refresh();
         }catch(IOException e){error(e.getMessage());}
     }
     private void importCatalog() {

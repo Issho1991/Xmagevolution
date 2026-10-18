@@ -1,5 +1,7 @@
 name: Automatic official XMage integration
 on:
+  schedule:
+    - cron: '43 */6 * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -27,6 +29,8 @@ jobs:
           java-version: '17'
       - name: Test automation failure gates
         run: python3 -m unittest discover -s automation/tests -v
+      - name: Verify and package the launcher
+        run: python3 automation/build_launcher.py --output launcher-build
       - name: Detect, integrate, build and verify
         id: build
         env:
@@ -52,6 +56,7 @@ jobs:
         with:
           name: integration-diagnostics
           path: |
+            launcher-build/Launcher_0_3_2_per_XMage_Lab.zip
             auto-work/spec.json
             auto-work/build/compile.log
             auto-work/tests/compile.log

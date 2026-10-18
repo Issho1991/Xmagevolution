@@ -1,7 +1,7 @@
 """Verify an automatic candidate and prepare a signed catalog locally.
 
 This script never uploads a key, writes GitHub, or executes a downloaded package.
-The scheduled agent publishes the resulting catalog with a branch-head lease.
+The separate channel workflow publishes the resulting catalog without force.
 """
 from pathlib import Path
 import argparse, base64, json, re, subprocess, tempfile, zipfile
@@ -107,6 +107,8 @@ def main():
     if args.tag != 'lab-auto-u'+str(spec['upstreamReleaseId']):raise ValueError('Candidate tag mismatch')
     run = api('https://api.github.com/repos/'+TARGET+'/actions/runs/'+str(proof['workflowRunId']))
     if (run.get('status') != 'completed' or run.get('conclusion') != 'success'
+            or run.get('repository', {}).get('full_name') != TARGET
+            or run.get('head_repository', {}).get('full_name') != TARGET
             or run.get('head_branch') != 'main' or run.get('head_sha') != proof['repositoryCommit']
             or run.get('path') != proof['workflowPath'] or run.get('event') not in ('schedule','push','workflow_dispatch')):
         raise ValueError('Candidate workflow not successfully completed on main')

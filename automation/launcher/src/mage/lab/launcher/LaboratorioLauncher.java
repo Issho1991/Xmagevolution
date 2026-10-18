@@ -17,7 +17,7 @@ public final class LaboratorioLauncher {
                 Installation installation = versions.active();
                 processes = new ProcessSupervisor(installation); processes.lock();
                 LauncherPanel panel = new LauncherPanel(installation, processes);
-                JFrame frame = new JFrame("XMage Laboratorio — Launcher 0.3.1");
+                JFrame frame = new JFrame("XMage Laboratorio — Launcher 0.3.2");
                 frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 frame.setContentPane(panel); frame.setSize(980, 720); frame.setMinimumSize(new Dimension(880, 660));
                 frame.setLocationRelativeTo(null);

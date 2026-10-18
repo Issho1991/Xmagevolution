@@ -24,7 +24,9 @@ Il canale va impostato una sola volta. Il launcher verifica firma e integrità d
 
 ## Integrazione degli aggiornamenti ufficiali
 
-Il launcher controlla separatamente gli aggiornamenti ufficiali XMage e i pacchetti Laboratorio. È attivo il [flusso automatico di integrazione](automation/README.md): un controllo ogni sei ore rileva le nuove release, GitHub integra e verifica il pacchetto e una verifica separata aggiorna il catalogo firmato. Conflitti o verifiche fallite mantengono disponibile la versione precedente. Sul PC l'installazione si avvia dallo stesso pulsante **Scarica e aggiorna Laboratorio**.
+Il launcher controlla separatamente gli aggiornamenti ufficiali XMage e i pacchetti Laboratorio. Il [flusso autonomo su GitHub](automation/README.md) verifica le nuove release ogni sei ore, integra le personalizzazioni e collauda il pacchetto. La pubblicazione nel catalogo firmato richiede la configurazione una tantum della chiave nell'ambiente protetto `lab-release`. Conflitti o verifiche fallite mantengono disponibile la versione precedente. Sul PC l'installazione si avvia dallo stesso pulsante **Scarica e aggiorna Laboratorio**.
+
+Il launcher **0.3.2** mostra anche lo stato del servizio e la data dell'ultimo controllo in **Aggiornamenti → Preparazione automatica degli aggiornamenti**. Il launcher 0.3.1 resta compatibile con il canale. Non è richiesto alcun promemoria ChatGPT.
 
 Per Lab 10.0 sono passati 450 test locali; la build pubblica ha ripetuto 147 test attivi e confrontato tutte le classi di produzione. Il pacchetto scaricato dalla release coincide con quello verificato localmente. Una partita grafica completa su Windows non fa parte di queste verifiche.
 
