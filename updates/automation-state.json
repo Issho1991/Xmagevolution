@@ -1,6 +1,6 @@
 {
-  "schema": 1,
-  "status": "active",
+  "schema": 2,
+  "status": "signing_not_configured",
   "activatedAt": "2026-10-14T17:51:20Z",
   "checkIntervalHours": 6,
   "upstreamReleaseId": 402688370,
@@ -17,6 +17,13 @@
     "automationTestsPassed": 15,
     "backupActivationServerRollback": true
   },
-  "lastNotificationKey": "automation-active:2026-10-14",
-  "pendingCandidate": null
+  "pendingCandidate": null,
+  "mode": "github-autonomous",
+  "notificationPolicy": "app-only",
+  "lastCheckedAt": "2026-10-18T13:33:42Z",
+  "lastWorkflowRunId": 39131898632,
+  "lastWorkflowRunAttempt": 1,
+  "workflowUrl": "https://github.com/Issho1991/Xmagevolution/actions/runs/39131898632",
+  "xmageVersion": "1.4.62-V1",
+  "lastSuccessfulCheckAt": "2026-10-18T13:33:42Z"
 }
