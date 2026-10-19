@@ -71,7 +71,16 @@ public final class GuiChecks {
             });
             System.out.println("PASS actual client startup, local connection, new-game dialog, mode="+modern);
             result=0;
-        }catch(Throwable error){error.printStackTrace();}
+        }catch(Throwable error){
+            error.printStackTrace();
+            CountDownLatch captured = new CountDownLatch(1);
+            SwingUtilities.invokeLater(() -> {
+                try { if (MageFrame.getInstance() != null) shot(MageFrame.getInstance(),work.resolve("client-failure-"+modern+".png")); }
+                catch (Exception snapshotError) { snapshotError.printStackTrace(); }
+                finally { captured.countDown(); }
+            });
+            captured.await(5,TimeUnit.SECONDS);
+        }
         finally {
             server.destroy();if(!server.waitFor(8,TimeUnit.SECONDS)){server.destroyForcibly();server.waitFor(8,TimeUnit.SECONDS);}
             System.exit(result);

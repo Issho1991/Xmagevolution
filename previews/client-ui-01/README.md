@@ -16,7 +16,12 @@ promozione serve una prova reale su Windows e il riscontro dell'utente.
 
 ## Riproduzione
 
-JDK 17, Python 3.9+. Su Linux usare Xvfb per le verifiche grafiche:
+JDK 17, Python 3.9+. L'avviatore usa automaticamente l'apertura del solo pacchetto
+`java.base/java.io` richiesta dalla serializzazione JBoss sulle JVM modulari;
+non passa questa opzione a Java 8. La verifica grafica usa il classpath del client
+distribuito, senza aggiungere copie delle librerie del server.
+
+Su Linux usare Xvfb per le verifiche grafiche:
 
 ```sh
 xvfb-run -a -s '-screen 0 1280x900x24' python3 previews/client-ui-01/build_preview.py --work preview-work --gui
