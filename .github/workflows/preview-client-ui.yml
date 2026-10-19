@@ -63,7 +63,7 @@ jobs:
           $sources = Get-ChildItem previews/client-ui-01/runner -Recurse -Filter *.java | ForEach-Object { $_.FullName }
           javac --release 8 -encoding UTF-8 -d preview-checks $sources previews/client-ui-01/tests/mage/lab/preview/IsolationChecks.java
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          java -Djava.awt.headless=true -cp preview-checks mage.lab.preview.IsolationChecks preview-isolation
+          java "-Djava.awt.headless=true" -cp preview-checks mage.lab.preview.IsolationChecks preview-isolation
           exit $LASTEXITCODE
   publish:
     needs: [build, windows]

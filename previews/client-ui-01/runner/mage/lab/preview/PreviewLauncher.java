@@ -150,6 +150,10 @@ public final class PreviewLauncher {
             return;
         }
         Path jar = Paths.get(PreviewLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath();
+        Path home = jar.getParent().getParent();
+        System.setProperty("java.util.prefs.PreferencesFactory", PrivatePreferences.class.getName());
+        System.setProperty("lab.preview.preferences", home.resolve("prova/preferenze-avviatore").toString());
+        System.setProperty("user.home", home.resolve("prova/home-avviatore").toString());
         SwingUtilities.invokeLater(() -> {
             try { new PreviewLauncher(jar); }
             catch (Exception e) { JOptionPane.showMessageDialog(null, e.getMessage(), "Anteprima XMage", JOptionPane.ERROR_MESSAGE); System.exit(1); }
