@@ -74,8 +74,9 @@ def main():
     run(['java','-Djava.awt.headless=true','-cp',testcp,'mage.lab.preview.HomeChecks',work])
     if a.gui:
         gui_runtime=work/'gui-runtime';shutil.copytree(runtime,gui_runtime)
+        guicp=os.pathsep.join([str(checkclasses),str(gui_runtime/'prova/anteprima.jar'),str(gui_runtime/'mage-client/lib/mage-client-1.4.62.jar')])
         for mode in ('true','false'):
-            run(['java','-Xmx3G','-Dxmage.lab.ui.preview='+mode,'-Djava.util.prefs.PreferencesFactory=mage.lab.preview.PrivatePreferences','-Dlab.preview.preferences='+str(work/'gui-prefs'),'-Duser.home='+str(work/'gui-home'),'-Dxmage.lab.dir='+str(work/'gui-data'),'-cp',testcp,'mage.lab.preview.GuiChecks',gui_runtime,work,mode],cwd=gui_runtime/'mage-client',timeout=240)
+            run(['java','-Xmx3G','--add-opens=java.base/java.io=ALL-UNNAMED','-Djava.net.preferIPv4Stack=true','-Dxmage.lab.ui.preview='+mode,'-Djava.util.prefs.PreferencesFactory=mage.lab.preview.PrivatePreferences','-Dlab.preview.preferences='+str(work/'gui-prefs'),'-Duser.home='+str(work/'gui-home'),'-Dxmage.lab.dir='+str(work/'gui-data'),'-cp',guicp,'mage.lab.preview.GuiChecks',gui_runtime,work,mode],cwd=gui_runtime/'mage-client',timeout=240)
     # Tests may create files in runtime. Package only the original payload and preview harness.
     allowed={line.split('\t',1)[1] for line in (runtime/'files.sha256').read_text().splitlines()}
     # Only the isolated launcher may be used to start this copy.

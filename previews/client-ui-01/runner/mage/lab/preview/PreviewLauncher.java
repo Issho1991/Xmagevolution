@@ -108,9 +108,12 @@ public final class PreviewLauncher {
     }
     public static java.util.List<String> command(Path home, Path jar, boolean client, boolean preview) {
         String java = Paths.get(System.getProperty("java.home"), "bin", System.getProperty("os.name").startsWith("Windows") ? "java.exe" : "java").toString();
-        java.util.List<String> cmd = new ArrayList<>(Arrays.asList(java, "-Xmx" + (client ? "3G" : "4G"), "-Dfile.encoding=UTF-8",
+        java.util.List<String> cmd = new ArrayList<>(Arrays.asList(java, "-Xmx" + (client ? "3G" : "4G"), "-Dfile.encoding=UTF-8", "-Djava.net.preferIPv4Stack=true",
                 "-Duser.home=" + home.resolve("prova/home"), "-Dxmage.lab.dir=" + home.resolve("laboratorio"),
                 "-Djava.util.prefs.PreferencesFactory=mage.lab.preview.PrivatePreferences", "-Dlab.preview.preferences=" + home.resolve("prova/preferenze")));
+        // JBoss Remoting's Java serialization needs this package on modular JVMs.
+        if (!System.getProperty("java.specification.version").startsWith("1."))
+            cmd.add("--add-opens=java.base/java.io=ALL-UNNAMED");
         if (client) {
             cmd.add("-Dxmage.lab.ui.preview=" + preview);
             cmd.add("-cp"); cmd.add(jar + File.pathSeparator + home.resolve("mage-client/lib/mage-client-1.4.62.jar"));
