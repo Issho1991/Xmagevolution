@@ -57,3 +57,25 @@ python3 automation/promote.py --tag lab-auto-u<release-id> --work promotion-work
 ```
 
 Questi due comandi preparano i file senza scrivere su GitHub. La pubblicazione deve mantenere le stesse verifiche sul ramo e su `previousCatalogSha256`, la scrittura atomica di catalogo/archivio/prova/stato e il controllo finale dell'URL del launcher.
+
+## Launcher 0.4.0
+
+L’interfaccia separa **Gioca**, **Aggiornamenti** e **Impostazioni**. La prima pagina mostra versione del Laboratorio, base XMage e IA attive; mazzi e report sono accessibili senza entrare nella diagnostica. Java, canale, cataloghi locali, importazione ZIP, versioni precedenti e backup restano nelle impostazioni. I riferimenti fissi alle vecchie versioni sono stati rimossi.
+
+Il controllo parte all’apertura in un thread separato e non impedisce di giocare; si può disabilitare dalla pagina Aggiornamenti. Nessuna installazione parte da sola. Uno stato “Tutto aggiornato” richiede un controllo riuscito sia del catalogo del gioco sia del launcher; un errore di rete non viene presentato come assenza di aggiornamenti. Il catalogo incorporato e quelli salvati vengono sempre verificati. Il pulsante di aggiornamento del gioco non propone una versione precedente a quella attiva: il ritorno intenzionale resta in Versioni e backup. Una versione aggiornata già scaricata può essere attivata direttamente, con verifica e backup.
+
+### Aggiornamento del launcher dall’app
+
+Il launcher usa un **catalogo distinto** in `updates/launcher.properties`, con prodotto `xmage-laboratorio-launcher`, versione, seriale derivato dalla versione, SHA-256 e dimensione del JAR, commit sorgente e URL immutabile della release `launcher-v<versione>`. La firma RSA è verificata con la stessa chiave pubblica incorporata. Il catalogo del gioco non autorizza codice del launcher. Versioni precedenti, contenuti diversi con la stessa versione, URL estranei e una chiave diversa nel nuovo JAR sono rifiutati.
+
+**Aggiorna launcher e riavvia** richiede conferma e client/server chiusi. Dopo il download verificato, un processo separato eseguito dalla copia del launcher precedente attende il rilascio del blocco di sessione. Conserva `backup-launcher.jar` nella cartella `launcher/aggiornamento-launcher/update-*`, sostituisce atomicamente il solo JAR e avvia la nuova versione. Il nuovo launcher deve confermare l’apertura entro 30 secondi. In caso di mancato avvio il processo tenta il ripristino e il riavvio del precedente; la copia resta disponibile anche per il recupero manuale. Un disco che non supporta la sostituzione atomica interrompe l’operazione. L’assistente di aggiornamento non modifica gioco, Java, impostazioni, mazzi o report.
+
+La migrazione da 0.3.x richiede ancora **una sostituzione manuale iniziale** del JAR, con lo ZIP `Launcher_0_4_0_per_XMage_Lab.zip`. Gli aggiornamenti successivi del launcher saranno disponibili dai suoi pulsanti quando pubblicati nel catalogo firmato.
+
+### Pubblicazione del launcher
+
+`release-launcher.yml` compila e verifica il launcher su **Ubuntu e Windows**, senza chiavi. I controlli comprendono firma, replay/downgrade, alterazione del JAR, ripristino e un passaggio reale fra JVM con blocco del file, conferma del nuovo avvio e simulazione di avvio fallito. Il test di passaggio usa applicazioni innocue create in cartelle temporanee; non avvia partite reali. Le anteprime sono prodotte con dati sintetici.
+
+Solo dopo il successo di entrambi i job, il job separato nell’ambiente `lab-release` usa il secret già configurato. `publish_launcher.py` controlla provenienza del run e risultati delle piattaforme, verifica ZIP/JAR e corrispondenza della chiave, pubblica asset immutabili, li riscarica e ne verifica gli hash. Pubblica poi il catalogo firmato e l’eventuale copia del precedente in un commit senza force e verifica il catalogo dall’URL effettivo. Non modifica `updates/catalog.properties` o lo stato del canale del gioco. Le variazioni concorrenti di codice o del catalogo interrompono la pubblicazione; gli aggiornamenti del solo stato non vengono sovrascritti.
+
+Ogni modifica pubblicata ai byte del launcher richiede una nuova versione coerente in `LauncherInfo.java` e `build_launcher.py`. Un rerun non può sovrascrivere gli asset di una versione con contenuti diversi. Questo flusso usa l’ambiente e la chiave esistenti; non richiede nuovi promemoria o secret.

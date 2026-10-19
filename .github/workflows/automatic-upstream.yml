@@ -56,7 +56,7 @@ jobs:
         with:
           name: integration-diagnostics
           path: |
-            launcher-build/Launcher_0_3_2_per_XMage_Lab.zip
+            launcher-build/Launcher_*_per_XMage_Lab.zip
             auto-work/spec.json
             auto-work/build/compile.log
             auto-work/tests/compile.log

@@ -1,0 +1,70 @@
+name: Release verified launcher
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'automation/launcher/**'
+      - 'automation/build_launcher.py'
+      - 'automation/publish_launcher.py'
+      - '.github/workflows/release-launcher.yml'
+permissions:
+  contents: read
+concurrency:
+  group: laboratorio-launcher-release
+  cancel-in-progress: false
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Build and test the launcher
+        run: python automation/build_launcher.py --output launcher-build
+      - name: Verify publication failure gates
+        if: runner.os == 'Linux'
+        run: python3 -m unittest discover -s automation/tests -v
+      - name: Keep verified launcher
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: verified-launcher
+          path: |
+            launcher-build/laboratorio-launcher.jar
+            launcher-build/Launcher_*_per_XMage_Lab.zip
+            launcher-build/launcher-verification.json
+            launcher-build/launcher-*.png
+          if-no-files-found: error
+          retention-days: 14
+  publish:
+    needs: build
+    if: github.repository == 'Issho1991/Xmagevolution' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: lab-release
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: verified-launcher
+          path: launcher-artifact
+      - name: Verify, sign and publish the launcher
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LAB_CATALOG_PRIVATE_KEY: ${{ secrets.LAB_CATALOG_PRIVATE_KEY }}
+        run: python3 automation/publish_launcher.py

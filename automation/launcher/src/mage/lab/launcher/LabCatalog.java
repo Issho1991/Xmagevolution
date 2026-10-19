@@ -71,7 +71,7 @@ final class LabCatalog {
         List<LabCatalog> all()throws IOException {
             List<LabCatalog> list=new ArrayList<>();
             // The bootstrap catalog has no remote URL; retained legacy ZIPs remain importable.
-            try(InputStream in=LabCatalog.class.getResourceAsStream("/lab-catalog-iniziale.properties")) {
+            for(String resource:new String[]{"/lab-catalog-iniziale.properties","/lab-catalog-corrente.properties"})try(InputStream in=LabCatalog.class.getResourceAsStream(resource)) {
                 if(in!=null&&Arrays.equals(key.getEncoded(),publicKey().getEncoded())) {
                     ByteArrayOutputStream b=new ByteArrayOutputStream();byte[] buf=new byte[8192];int n;
                     while((n=in.read(buf))!=-1){if(b.size()+n>LIMIT)throw new IOException("Catalogo iniziale troppo grande.");b.write(buf,0,n);}list.add(verify(b.toByteArray(),key));
