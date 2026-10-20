@@ -30,6 +30,7 @@ jobs:
       - name: Inspect completed run and candidate without the signing key
         env:
           SOURCE_RUN: ${{ github.event.workflow_run.id }}
+          GH_TOKEN: ${{ github.token }}
         run: python3 automation/channel.py --run-id "$SOURCE_RUN" --work promotion-work
       - name: Sign and publish only a verified candidate; record service status
         env:

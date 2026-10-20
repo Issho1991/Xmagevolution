@@ -4,7 +4,9 @@ No signing key, repository write credential, or upstream build script is used he
 """
 from pathlib import Path, PurePosixPath
 import argparse, base64, hashlib, json, os, re, shutil, stat, subprocess, sys
-import tempfile, urllib.request, zipfile, xml.etree.ElementTree as ET
+import tempfile, time, urllib.error, urllib.parse, urllib.request, zipfile, xml.etree.ElementTree as ET
+from email.utils import parsedate_to_datetime
+from math import ceil
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
@@ -17,14 +19,77 @@ BASELINE_URL = 'https://github.com/Issho1991/Xmagevolution/releases/download/lab
 BASELINE_HASH = '4c380e8ac2819c0a3bc38cf034c214afc94ea4e11acb3e6490617f034007c8f9'
 JUNIT_URL = 'https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.5/junit-platform-console-standalone-1.10.5.jar'
 JUNIT_HASH = 'defd77f4a1cc960c05ec8eb3edce7094bf043b496819a808e882935d889c085b'
+API_ATTEMPTS = 3
+API_WAIT_BUDGET = 180
 
 def digest(path):
     with Path(path).open('rb') as f:
         return hashlib.file_digest(f, 'sha256').hexdigest()
 
+def is_github_api(url):
+    parsed = urllib.parse.urlsplit(url)
+    return parsed.scheme == 'https' and parsed.netloc == 'api.github.com'
+
+
+def rate_limit_delay(error, attempt):
+    """Return a safe wait for throttling, not for permission/authentication errors."""
+    if error.code not in (403, 429):
+        return None
+    headers = error.headers
+    retry_after = headers.get('Retry-After')
+    remaining = headers.get('X-RateLimit-Remaining')
+    message = error.read(8192).decode('utf-8', errors='replace').lower()
+    if (error.code != 429 and remaining != '0' and retry_after is None
+            and 'rate limit' not in message and 'rate limit' not in str(error.reason).lower()):
+        return None
+    delays = []
+    if retry_after is not None:
+        try:
+            delays.append(max(1, int(retry_after)))
+        except ValueError:
+            try:
+                delays.append(max(1, ceil(parsedate_to_datetime(retry_after).timestamp() - time.time())))
+            except (TypeError, ValueError, OverflowError):
+                pass
+    if remaining == '0':
+        try:
+            delays.append(max(1, ceil(int(headers['X-RateLimit-Reset']) - time.time()) + 1))
+        except (KeyError, TypeError, ValueError, OverflowError):
+            pass
+    return max(delays) if delays else 60 * (2 ** attempt)
+
+
+def github_response(url, accept='application/vnd.github+json'):
+    """Authenticated GETs only; never forward credentials to download redirects."""
+    if not is_github_api(url):
+        raise ValueError('Expected the HTTPS GitHub API origin')
+    headers = {'User-Agent': 'XMage-Laboratorio-Automation',
+               'Accept': accept, 'X-GitHub-Api-Version': '2022-11-28'}
+    token = os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
+    waited = 0
+    for attempt in range(API_ATTEMPTS):
+        request = urllib.request.Request(url, headers=headers)
+        if token:
+            # urllib excludes unredirected headers when constructing ANY redirect.
+            request.add_unredirected_header('Authorization', 'Bearer ' + token)
+        try:
+            return urllib.request.urlopen(request, timeout=90)
+        except urllib.error.HTTPError as error:
+            delay = rate_limit_delay(error, attempt)
+            if delay is None:
+                raise
+            error.close()
+            if attempt + 1 == API_ATTEMPTS or waited + delay > API_WAIT_BUDGET:
+                raise RuntimeError('GitHub API rate limit: retry budget exceeded; '
+                                   'retry after the reset or at the next scheduled check.') from None
+            print('GitHub API rate limit; waiting %d seconds before retry %d/%d.'
+                  % (delay, attempt + 2, API_ATTEMPTS), flush=True)
+            time.sleep(delay)
+            waited += delay
+
+
 def api(url):
-    request = urllib.request.Request(url, headers={'User-Agent': 'XMage-Laboratorio-Automation', 'Accept': 'application/vnd.github+json'})
-    with urllib.request.urlopen(request, timeout=90) as response:
+    with github_response(url) as response:
         return json.loads(response.read(4 * 1024 * 1024))
 
 def download(url, path, expected=None):
@@ -34,7 +99,9 @@ def download(url, path, expected=None):
     tmp = path.with_suffix(path.suffix + '.partial')
     try:
         request = urllib.request.Request(url, headers={'User-Agent': 'XMage-Laboratorio-Automation'})
-        with urllib.request.urlopen(request, timeout=90) as response, tmp.open('wb') as out:
+        response = (github_response(url, 'application/octet-stream') if is_github_api(url)
+                    else urllib.request.urlopen(request, timeout=90))
+        with response, tmp.open('wb') as out:
             size = 0
             while chunk := response.read(1024 * 1024):
                 size += len(chunk)

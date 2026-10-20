@@ -41,6 +41,10 @@ Il controllo del servizio avviene con il pulsante dell'app. All'apertura viene m
 
 Gli orari di GitHub Actions possono subire ritardi; GitHub può disattivare workflow programmati in repository pubblici inattivi. La data nell'app rende visibile un eventuale arresto. Se il workflow di pubblicazione non parte per un blocco dell'ambiente o dei permessi, lo stato diventa obsoleto e il launcher lo segnala. Le preferenze personali di notifica di GitHub rimangono gestite dall'account GitHub.
 
+Le letture delle API usano il `GITHUB_TOKEN` temporaneo del workflow, esposto come `GH_TOKEN`: nel job di integrazione ha soltanto `contents: read`. Non serve un nuovo secret. Il token è inviato esclusivamente a `https://api.github.com` e non viene inoltrato nei redirect o ai server dei pacchetti. Anche il controllo del canale usa il token nel processo principale; il processo separato di promozione continua a non ereditare token o la chiave in formato testo.
+
+In caso di limite API (`403` riconosciuto come rate limit o `429`), le letture rispettano `Retry-After` e `X-RateLimit-Reset`, con al massimo tre tentativi e 180 secondi complessivi di attesa. Se il limite richiede più tempo, il controllo fallisce senza anticipare il reset e riprova alla successiva esecuzione programmata. Gli errori di autenticazione e permesso restano errori; nessun controllo di firma, provenienza o test viene saltato. Il riferimento per i tempi di attesa è la [documentazione GitHub sui limiti API](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api).
+
 ```sh
 python3 -m unittest discover -s automation/tests -v
 python3 automation/build_launcher.py --output launcher-build

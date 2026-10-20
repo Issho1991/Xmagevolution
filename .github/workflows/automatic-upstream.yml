@@ -35,6 +35,8 @@ jobs:
         id: build
         env:
           REPLAY: ${{ github.event_name == 'push' }}
+          # This job has contents: read only; no signing key or write token.
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [ "$REPLAY" = true ]; then
             python3 automation/pipeline.py --replay
