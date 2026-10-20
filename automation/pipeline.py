@@ -59,12 +59,12 @@ def rate_limit_delay(error, attempt):
     return max(delays) if delays else 60 * (2 ** attempt)
 
 
-def github_response(url, accept='application/vnd.github+json'):
+def github_response(url):
     """Authenticated GETs only; never forward credentials to download redirects."""
     if not is_github_api(url):
         raise ValueError('Expected the HTTPS GitHub API origin')
     headers = {'User-Agent': 'XMage-Laboratorio-Automation',
-               'Accept': accept, 'X-GitHub-Api-Version': '2022-11-28'}
+               'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'}
     token = os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
     waited = 0
     for attempt in range(API_ATTEMPTS):
@@ -99,7 +99,7 @@ def download(url, path, expected=None):
     tmp = path.with_suffix(path.suffix + '.partial')
     try:
         request = urllib.request.Request(url, headers={'User-Agent': 'XMage-Laboratorio-Automation'})
-        response = (github_response(url, 'application/octet-stream') if is_github_api(url)
+        response = (github_response(url) if is_github_api(url)
                     else urllib.request.urlopen(request, timeout=90))
         with response, tmp.open('wb') as out:
             size = 0

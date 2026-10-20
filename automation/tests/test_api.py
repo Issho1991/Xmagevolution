@@ -130,6 +130,8 @@ class ApiTests(unittest.TestCase):
                               hashlib.sha256(data).hexdigest())
             self.assertEqual(target.read_bytes(), data)
             self.assertEqual(opened.call_args.args[0].get_header('Authorization'), 'Bearer TEST-ONLY-TOKEN')
+            # The zipball API negotiates its redirect with the JSON API media type.
+            self.assertEqual(opened.call_args.args[0].get_header('Accept'), 'application/vnd.github+json')
             sleep.assert_called_once_with(1)
             self.assertFalse(target.with_suffix('.zip.partial').exists())
 
