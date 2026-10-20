@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "status": "current",
+  "status": "blocked",
   "activatedAt": "2026-10-14T17:51:20Z",
   "checkIntervalHours": 6,
   "upstreamReleaseId": 402688370,
@@ -20,10 +20,10 @@
   "pendingCandidate": null,
   "mode": "github-autonomous",
   "notificationPolicy": "app-only",
-  "lastCheckedAt": "2026-10-20T13:23:36Z",
-  "lastWorkflowRunId": 39429894562,
+  "lastCheckedAt": "2026-10-20T19:18:16Z",
+  "lastWorkflowRunId": 39482208478,
   "lastWorkflowRunAttempt": 1,
-  "workflowUrl": "https://github.com/Issho1991/Xmagevolution/actions/runs/39429894562",
+  "workflowUrl": "https://github.com/Issho1991/Xmagevolution/actions/runs/39482208478",
   "xmageVersion": "1.4.62-V1",
   "lastSuccessfulCheckAt": "2026-10-20T13:23:36Z"
 }
