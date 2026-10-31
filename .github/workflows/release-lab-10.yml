@@ -1,10 +1,7 @@
 name: Build and publish Lab 10.0
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'releases/lab-10.0-ai6/**'
-      - '.github/workflows/release-lab-10.yml'
+  # Historical 1.4.62 release: use its original tag for manual reconstruction.
+  # Evolving overlays are verified and published by automatic-upstream.yml.
   workflow_dispatch:
 permissions:
   contents: write
