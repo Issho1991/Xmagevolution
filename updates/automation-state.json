@@ -1,12 +1,12 @@
 {
   "schema": 2,
-  "status": "publication_failed",
+  "status": "published",
   "activatedAt": "2026-10-14T17:51:20Z",
   "checkIntervalHours": 6,
   "upstreamReleaseId": 429820909,
   "upstreamTag": "xmage_1.4.63V1",
-  "catalogSerial": 3,
-  "labId": "lab-10.0-ai6",
+  "catalogSerial": 4,
+  "labId": "lab-10.0-u429820909-ai6",
   "bootstrap": {
     "commit": "db550748e7c183e1af8b9fc9204cbfa9cf794366",
     "workflowRunId": 38609745948,
@@ -20,10 +20,10 @@
   "pendingCandidate": null,
   "mode": "github-autonomous",
   "notificationPolicy": "app-only",
-  "lastCheckedAt": "2026-10-31T15:28:38Z",
+  "lastCheckedAt": "2026-10-31T15:32:52Z",
   "lastWorkflowRunId": 41214752401,
   "lastWorkflowRunAttempt": 1,
   "workflowUrl": "https://github.com/Issho1991/Xmagevolution/actions/runs/41214752401",
-  "xmageVersion": "1.4.62-V1",
-  "lastSuccessfulCheckAt": "2026-10-31T06:18:37Z"
+  "xmageVersion": "1.4.63-V1",
+  "lastSuccessfulCheckAt": "2026-10-31T15:32:52Z"
 }
