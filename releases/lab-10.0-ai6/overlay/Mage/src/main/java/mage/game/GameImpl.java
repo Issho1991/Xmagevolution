@@ -1024,8 +1024,8 @@ public abstract class GameImpl implements Game {
                     GameState restore = gameStates.rollback(stateNum);
                     if (restore != null) {
                         state.restore(restore);
-                        mage.lab.LabRecorder.stateRestored(this, labCheckpoint, context);
                         playerList.setCurrent(state.getPlayerByOrderId());
+                        mage.lab.LabRecorder.stateRestored(this, labCheckpoint, context);
                         return state;
                     }
                 }

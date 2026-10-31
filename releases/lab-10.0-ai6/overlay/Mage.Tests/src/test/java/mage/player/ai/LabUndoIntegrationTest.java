@@ -99,4 +99,42 @@ public class LabUndoIntegrationTest {
         s.game.getState().setTurnNum(2);rec.observe(s.game);s.game.getState().setTurnNum(1);rec.observe(s.game);
         LabGame data=end(s,rec);assertFalse(data.exclusions.contains("Partita con rollback"));
     }
+
+    @Test public void ManaActionRestoreKeepsLiveStackAndDiscardsOnlyCanceledLabEvents() throws Exception {
+        verifyStackAndTraceAfterRestore(true);
+    }
+
+    @Test public void OrdinaryRestoreCopiesStackAndDiscardsOnlyCanceledLabEvents() throws Exception {
+        verifyStackAndTraceAfterRestore(false);
+    }
+
+    private void verifyStackAndTraceAfterRestore(boolean keepStack) throws Exception {
+        ForcedPassPriorityTest.Scenario s=scenario();
+        Card free=new Memnite(s.ai.getId(),info("Memnite"));s.put(free,s.ai,Zone.HAND);
+        LabRecorder rec=LabRecorder.start(s.game,store());LabRecorder.mulliganFinished(s.game);
+        assertTrue(s.ai.cast(free.getSpellAbility(),s.game,false,null));
+        mage.game.stack.SpellStack liveStack=s.game.getStack();
+        mage.game.stack.StackObject liveSpell=liveStack.peek();
+        assertNotNull(liveSpell);
+        int bookmark=s.game.bookmarkState();
+        s.ai.setLife(17,s.game,null);event(s,"Canceled draw");
+        // A failed mana action changes no stack objects. The active spell must
+        // retain its identity so activation can continue writing to that object.
+        if(keepStack){
+            assertNotNull(s.ai.restoreStateKeepingStack(bookmark,"mana action compatibility",s.game));
+            assertSame(liveStack,s.game.getStack());assertSame(liveSpell,s.game.getStack().peek());
+        }else{
+            assertNotNull(s.ai.restoreState(bookmark,"ordinary action compatibility",s.game));
+            assertNotSame(liveStack,s.game.getStack());assertNotSame(liveSpell,s.game.getStack().peek());
+        }
+        assertEquals(30,s.ai.getLife());assertEquals(1,s.game.getStack().size());
+        assertEquals(liveSpell.getId(),s.game.getStack().peek().getId());
+        event(s,"Later real draw");
+        LabGame data=end(s,rec);List<LabGame.Event> raw=store().events(data.id);LabTrace trace=LabTrace.select(data,raw);
+        assertTrue(data.exclusions.toString(),data.eligible());assertTrue(trace.notes.toString(),trace.completeEvents);
+        assertEquals(1,raw.stream().filter(e->"STATE_RESTORED".equals(e.kind)&&e.restoredAfterEvent!=null).count());
+        assertEquals(1,trace.events.stream().filter(e->"SPELL_CAST".equals(e.kind)).count());
+        assertEquals(1,trace.events.stream().filter(e->"DREW_CARD".equals(e.kind)).count());
+        assertFalse(trace.events.stream().anyMatch(e->"Canceled draw".equals(e.targetName)));
+    }
 }

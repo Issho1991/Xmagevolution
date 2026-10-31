@@ -15,6 +15,10 @@ Il controllo è eseguito da GitHub Actions ogni sei ore. Non dipende da ChatGPT,
 
 Replay, downgrade, prove incoerenti, pacchetti alterati o archivi già pubblicati con contenuto differente sono rifiutati. I test e le personalizzazioni non vengono indeboliti per superare un blocco. Un errore mantiene disponibile l'ultima versione verificata; il controllo successivo può ritentare. I problemi di compatibilità richiedono una correzione di sviluppo.
 
+### Compatibilità XMage 1.4.63
+
+La registrazione del ripristino in `GameImpl` avviene dopo il ripristino dello stato e dell'ordine dei giocatori. Questo permette al merge a tre vie di conservare la nuova modalità ufficiale `restoreStateKeepingStack`, insieme ai checkpoint dei report e al divieto di annullare un'eliminazione. Tre regressioni aggiuntive verificano l'identità della pila durante un ripristino di un'azione di mana, il ripristino ordinario e il blocco attraverso un'eliminazione; gli eventi annullati restano esclusi dall'analisi. I pacchetti già pubblicati restano immutati. Anche le modifiche all'overlay avviano ora la verifica completa su `main`.
+
 ## Configurazione iniziale della firma
 
 Da **Settings → Environments** del repository:

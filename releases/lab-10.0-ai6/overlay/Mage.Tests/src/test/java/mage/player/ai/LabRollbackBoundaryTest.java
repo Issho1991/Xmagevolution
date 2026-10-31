@@ -58,6 +58,13 @@ public class LabRollbackBoundaryTest {
         assertEquals(0, s.players.get(1).getLife());
         assertFalse(s.players.get(1).isInGame());
     }
+    @Test public void keepingStackCannotRestoreAPlayerAcrossElimination() throws Exception {
+        ForcedPassPriorityTest.Scenario s = scenario();
+        int bookmark = s.game.bookmarkState(); eliminate(s, s.players.get(1));
+        assertNull(s.ai.restoreStateKeepingStack(bookmark, "failed mana action", s.game));
+        assertEquals(0, s.players.get(1).getLife());
+        assertFalse(s.players.get(1).isInGame());
+    }
     @Test public void turnsAfterAnEliminationRemainReversible() throws Exception {
         ForcedPassPriorityTest.Scenario s = scenario();
         eliminate(s, s.players.get(1)); s.game.getState().setTurnNum(2); s.game.saveRollBackGameState();

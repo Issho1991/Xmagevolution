@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - 'automation/**'
+      - 'releases/lab-10.0-ai6/overlay/**'
       - '.github/workflows/automatic-upstream.yml'
 permissions:
   contents: read
