@@ -1,0 +1,32 @@
+XMAGE — ANTEPRIMA INTERFACCIA 01
+Base: Laboratorio 10.0 / XMage 1.4.62-V1 / IA 6
+
+Questa è una copia separata per provare la nuova home e la preparazione del tavolo.
+Non è un aggiornamento del canale normale. Non inserirla nel launcher abituale.
+
+1. Estrai l'intera cartella XMage_Anteprima_Interfaccia_01 accanto al tuo Laboratorio,
+   senza unire le due cartelle e senza sostituire file.
+2. Chiudi il Laboratorio abituale e apri Avvia_Anteprima.cmd.
+   Serve Java 8 o successivo; per compilare serve Java 17.
+   Se Java non è trovato, trascina il file java.exe che usi per XMage sul CMD.
+3. Scegli Interfaccia nuova e premi Avvia la prova. Il primo avvio può richiedere tempo.
+4. Copia (non spostare) i mazzi che vuoi provare in mage-client/decks.
+   Per vedere le immagini già scaricate, copiale in mage-client/plugins/images.
+   Non collegare la prova a cartelle originali: le sue preferenze sono indipendenti.
+5. Prova Nuova partita, i profili per 2/3/4 giocatori, la selezione dei mazzi,
+   le opzioni avanzate, e l'accesso all'editor e al Laboratorio.
+   I profili cambiano numero di giocatori, vite (30) e vittorie necessarie (2).
+   Il formato dei mazzi resta quello selezionato; le regole vengono validate da XMage.
+6. Per confrontare l'interfaccia classica: chiudi client e server con il pulsante,
+   seleziona Interfaccia classica, poi riavvia la prova.
+7. Per tornare alla versione stabile: chiudi questa prova e riapri il tuo launcher abituale.
+   Non devi ripristinare o sovrascrivere niente.
+
+La prova usa il server locale 127.0.0.1:17182, preferenze in prova/preferenze,
+report in laboratorio e log in prova/logs. Non legge il registro condiviso.
+Le due interfacce di confronto condividono solo i dati di questa copia di prova.
+Nessun aggiornamento o invio di report parte da questo avviatore.
+
+Da verificare giocando: selezione carte, attacchi, blocchi, scelte, chiusura partita,
+report e immagini. I test automatici non sostituiscono una partita reale su Windows.
+Se qualcosa non funziona, torna alla versione abituale e conserva prova/logs.
